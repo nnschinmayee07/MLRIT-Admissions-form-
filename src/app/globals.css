@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --orange: #ff7a00;
+  --green: #00c16a;
+  --dark: #0b0b0b;
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0b0b;
+}
+::-webkit-scrollbar-thumb {
+  background: #ff7a00;
+  border-radius: 3px;
+}
+
+/* Input autofill override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.05) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Select option styling */
+select option {
+  background-color: #0f172a;
+  color: white;
+}
+
+/* Focus glow for inputs */
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2), 0 0 20px rgba(255, 122, 0, 0.08);
+}
+
+/* Floating label animation */
+.peer:not(:placeholder-shown) ~ label,
+.peer:focus ~ label {
+  top: -0.5rem;
+  font-size: 0.75rem;
+  color: #ff7a00;
+}
+
+/* Glass morphism utility class */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 30px rgba(255, 122, 0, 0.15);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 30px rgba(0, 193, 106, 0.15);
+  }
+
+  .text-gradient {
+    background: linear-gradient(90deg, #ff7a00, #ffffff, #00c16a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
