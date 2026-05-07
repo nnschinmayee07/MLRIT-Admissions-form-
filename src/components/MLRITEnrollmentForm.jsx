@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const INTERESTS = ['AI & ML','Robotics','Startups','Design','Coding','Research','IoT','Data Science','Cybersecurity','Product','Cloud','Embedded'];
@@ -151,6 +151,16 @@ function Sel({ label, name, opts, value, onChange, error }) {
 }
 
 export default function MLRITForm() {
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.playbackRate = 0.35;
+    const onEnded = () => v.pause();
+    v.addEventListener('ended', onEnded);
+    return () => v.removeEventListener('ended', onEnded);
+  }, []);
+
   const blank = { name:'',email:'',phone:'',college:'',pct:'',branch:'',excites:'',goals:'',city:'',state:'',consent:false };
   const [f, setF]         = useState(blank);
   const [chips, setChips] = useState([]);
@@ -205,17 +215,19 @@ export default function MLRITForm() {
 
       <div id="mf" style={{ position:'relative',minHeight:'100vh',overflowX:'hidden' }}>
 
-        {/* Campus background */}
+        {/* Campus background video */}
         <div style={{ position:'absolute',inset:0,zIndex:0 }}>
-          <img src="/campus.jpg" alt="MLRIT campus"
+          <video
+            ref={videoRef}
+            autoPlay muted playsInline
             style={{
               width:'100%',height:'100%',
-              objectFit:'cover',objectPosition:'center top',
-              imageRendering:'high-quality',
-              willChange:'transform',
-              transform:'scale(1.01)', /* prevents sub-pixel blurring at edges */
-            }}/>
-          {/* lighter overlay so campus detail stays visible */}
+              objectFit:'cover',objectPosition:'center center',
+              transform:'scale(1.08)',
+              transformOrigin:'center center',
+            }}>
+            <source src="https://res.cloudinary.com/dt21hlxa1/video/upload/background_iegs9i.mp4" type="video/mp4"/>
+          </video>
           <div style={{ position:'absolute',inset:0,background:'linear-gradient(160deg,rgba(4,8,20,0.62) 0%,rgba(4,8,20,0.38) 50%,rgba(0,12,8,0.55) 100%)' }}/>
           <div style={{ position:'absolute',inset:0,background:'radial-gradient(ellipse 70% 35% at 50% 0%,rgba(255,122,0,0.08),transparent 65%)' }}/>
           <div style={{ position:'absolute',inset:0,background:'radial-gradient(ellipse 70% 35% at 50% 100%,rgba(0,193,106,0.07),transparent 65%)' }}/>
