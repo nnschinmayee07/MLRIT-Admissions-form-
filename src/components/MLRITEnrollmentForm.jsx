@@ -166,6 +166,8 @@ export default function MLRITForm() {
   const [chips, setChips] = useState([]);
   const [errs, setErrs]   = useState({});
   const [done, setDone]   = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitErr, setSubmitErr]   = useState('');
 
   const set = e => {
     const { name,value,type,checked } = e.target;
@@ -189,12 +191,26 @@ export default function MLRITForm() {
     return e;
   };
 
-  const submit = e => {
+  const submit = async e => {
     e.preventDefault();
     const ev = validate();
     if (Object.keys(ev).length) { setErrs(ev); return; }
-    setDone(true);
-    setTimeout(() => { setDone(false); setF(blank); setChips([]); }, 4500);
+    setSubmitting(true);
+    setSubmitErr('');
+    try {
+      const res = await fetch('/api/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...f, chips: chips.join(', ') }),
+      });
+      if (!res.ok) throw new Error('Server error');
+      setDone(true);
+      setTimeout(() => { setDone(false); setF(blank); setChips([]); }, 5000);
+    } catch {
+      setSubmitErr('Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const DIV_O = <div style={{ height:1,background:'linear-gradient(90deg,transparent,rgba(255,122,0,0.45),transparent)',margin:'28px 0' }}/>;
@@ -395,20 +411,21 @@ export default function MLRITForm() {
                 </QTile>
 
                 <motion.button type="submit" {...reveal(0.1)}
-                  whileHover={{ scale:1.015,y:-1 }} whileTap={{ scale:0.985 }}
+                  whileHover={submitting ? {} : { scale:1.015,y:-1 }} whileTap={submitting ? {} : { scale:0.985 }}
+                  disabled={submitting}
                   className="mf-submit"
                   style={{
                     width:'100%',
                     padding:'15px 24px',
                     borderRadius:10,
-                    background:'transparent',
+                    background: submitting ? 'rgba(255,122,0,0.08)' : 'transparent',
                     color:'#fff',
                     fontSize:13,
                     fontWeight:700,
                     letterSpacing:'0.08em',
                     textTransform:'uppercase',
-                    border:'1.5px solid rgba(255,255,255,0.55)',
-                    cursor:'pointer',
+                    border: submitting ? '1.5px solid #ff7a00' : '1.5px solid rgba(255,255,255,0.55)',
+                    cursor: submitting ? 'not-allowed' : 'pointer',
                     display:'flex',
                     alignItems:'center',
                     justifyContent:'space-between',
@@ -416,21 +433,40 @@ export default function MLRITForm() {
                     transition:'border-color .2s ease, background .2s ease',
                     position:'relative',
                     overflow:'hidden',
+                    opacity: submitting ? 0.8 : 1,
                   }}
                   onMouseEnter={e => {
+                    if (submitting) return;
                     e.currentTarget.style.borderColor = '#ff7a00';
                     e.currentTarget.style.background  = 'rgba(255,122,0,0.08)';
                   }}
                   onMouseLeave={e => {
+                    if (submitting) return;
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)';
                     e.currentTarget.style.background  = 'transparent';
                   }}>
-                  <span style={{ letterSpacing:'0.1em' }}>Submit Application</span>
+                  <span style={{ letterSpacing:'0.1em' }}>
+                    {submitting ? 'Sending…' : 'Submit Application'}
+                  </span>
                   <span style={{ display:'flex',alignItems:'center',gap:6,opacity:0.7,fontSize:11,fontWeight:600,letterSpacing:'0.06em' }}>
-                    MLRIT 2025–26
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    {submitting ? (
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ animation:'spin 1s linear infinite' }}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity={0.3}/><path d="M21 12a9 9 0 00-9-9"/></svg>
+                    ) : (
+                      <>
+                        MLRIT 2025–26
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                      </>
+                    )}
                   </span>
                 </motion.button>
+                <AnimatePresence>
+                  {submitErr && (
+                    <motion.p initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} exit={{opacity:0}}
+                      style={{textAlign:'center',fontSize:12,color:'#fca5a5',fontWeight:600,marginTop:8}}>
+                      {submitErr}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
                 <p style={{ textAlign:'center',fontSize:11,color:'rgba(255,255,255,0.28)',marginTop:-10,display:'flex',alignItems:'center',justifyContent:'center',gap:5 }}>
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                   Encrypted &amp; secure · Response within 5 business days
