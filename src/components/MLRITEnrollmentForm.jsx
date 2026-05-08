@@ -67,10 +67,16 @@ function AnimatedCheck() {
 function SuccessScreen({ name, email, branch }) {
   const canvasRef = useRef(null);
   const fireConfetti = useConfetti(canvasRef);
+  const [countdown, setCountdown] = useState(5);
   useEffect(() => {
     const cleanup = fireConfetti();
     return cleanup;
   }, [fireConfetti]);
+  useEffect(() => {
+    const iv = setInterval(() => setCountdown(c => c - 1), 1000);
+    const t = setTimeout(() => { window.location.href = 'https://qr-mlr.vercel.app/'; }, 5000);
+    return () => { clearInterval(iv); clearTimeout(t); };
+  }, []);
 
   return (
     <motion.div
@@ -159,7 +165,10 @@ function SuccessScreen({ name, email, branch }) {
         {/* footer */}
         <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.9 }}>
           <p style={{ fontSize:11, color:'rgba(255,255,255,0.25)', marginBottom:4 }}>MLR Institute of Technology · Maisammaguda, Hyderabad</p>
-          <p style={{ fontSize:11, color:'rgba(255,255,255,0.18)' }}>info@mlrit.ac.in · 9652226061</p>
+          <p style={{ fontSize:11, color:'rgba(255,255,255,0.18)', marginBottom:16 }}>info@mlrit.ac.in · 9652226061</p>
+          <p style={{ fontSize:12, color:'rgba(255,255,255,0.35)', fontWeight:500 }}>
+            Redirecting in <span style={{ color:'#00c16a', fontWeight:700 }}>{countdown}</span>s…
+          </p>
         </motion.div>
       </div>
     </motion.div>
