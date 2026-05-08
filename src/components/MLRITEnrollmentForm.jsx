@@ -385,6 +385,7 @@ export default function MLRITForm() {
       if (!res.ok) throw new Error('Server error');
       setSubmitted({ name: f.name, email: f.email, branch: f.branch });
       setDone(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
       setSubmitErr('Something went wrong. Please try again.');
     } finally {
