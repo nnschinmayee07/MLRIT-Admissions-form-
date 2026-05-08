@@ -61,7 +61,7 @@ async function sendWelcomeMail(data: Record<string, string>) {
     <!-- ORANGE HERO -->
     <tr>
       <td style="background:linear-gradient(155deg,#F08A35 0%,#E97724 50%,#C45A1A 100%);border-radius:14px 14px 0 0;padding:44px 40px 36px;text-align:center;">
-        <p style="margin:0 0 16px;color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;">Admissions 2025–26</p>
+        <p style="margin:0 0 16px;color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;">Admissions 2026–27</p>
         <h1 style="margin:0 0 8px;color:#fff;font-size:34px;font-weight:800;letter-spacing:-0.6px;line-height:1.1;">Welcome, ${data.name}! 🎉</h1>
         <p style="margin:0;color:rgba(255,255,255,0.85);font-size:15px;">MLR Institute of Technology is glad to hear from you.</p>
         <div style="margin:24px auto 0;width:80px;border-top:2px dotted rgba(255,255,255,0.4);"></div>
