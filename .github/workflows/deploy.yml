@@ -30,5 +30,13 @@ jobs:
           mkdir -p .vercel
           echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
 
+      - name: Set Vercel env vars
+        run: |
+          echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}' | npx vercel@latest env add GOOGLE_SERVICE_ACCOUNT_KEY production --token ${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || true
+          echo '${{ secrets.GOOGLE_SHEET_ID }}' | npx vercel@latest env add GOOGLE_SHEET_ID production --token ${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || true
+          echo '${{ secrets.GMAIL_USER }}' | npx vercel@latest env add GMAIL_USER production --token ${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || true
+          echo '${{ secrets.GMAIL_APP_PASSWORD }}' | npx vercel@latest env add GMAIL_APP_PASSWORD production --token ${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || true
+          echo '${{ secrets.ADMIN_EMAIL }}' | npx vercel@latest env add ADMIN_EMAIL production --token ${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || true
+
       - name: Deploy to Vercel
         run: npx vercel@latest --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
