@@ -283,13 +283,14 @@ function SH({ n, label, sub }) {
 
 const iCls = 'w-full rounded-xl px-4 py-3.5 text-white text-sm placeholder-white/30 outline-none appearance-none transition-all duration-300 hover:border-[#00c16a]/50 focus:border-[#ff7a00]/60 focus:shadow-[0_0_0_3px_rgba(255,122,0,0.18)]';
 
-function Inp({ label, name, type='text', value, onChange, error, opt, ph }) {
+function Inp({ label, name, type='text', value, onChange, error, opt, ph, maxLength, inputMode, min, max, step, onKeyDown }) {
   return (
     <>
       <QL opt={opt}>{label}</QL>
       <input type={type} name={name} value={value} onChange={onChange}
         placeholder={ph||`Enter ${label.toLowerCase()}`}
         className={iCls}
+        maxLength={maxLength} inputMode={inputMode} min={min} max={max} step={step} onKeyDown={onKeyDown}
         style={{ ...GI,borderRadius:12,fontFamily:'inherit',width:'100%' }}/>
       <AnimatePresence>
         {error && <motion.p initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} exit={{opacity:0}}
@@ -345,6 +346,10 @@ export default function MLRITForm() {
 
   const set = e => {
     const { name,value,type,checked } = e.target;
+    if (name === 'phone' && !/^\d*$/.test(value)) return;
+    if (name === 'pct') {
+      if (value !== '' && (isNaN(value) || Number(value) < 0 || Number(value) > 100)) return;
+    }
     setF(p => ({ ...p,[name]:type==='checkbox'?checked:value }));
     setErrs(p => ({ ...p,[name]:'' }));
   };
@@ -468,17 +473,17 @@ export default function MLRITForm() {
 
                     <SH n={1} label="Who are you?" sub="Let's start with the basics"/>
                     <div className="mf-grid" style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10 }}>
-                      <QTile delay={0.05} cols={2}><Inp label="What should we call you?" name="name" value={f.name} onChange={set} error={errs.name} ph="Your full name"/></QTile>
-                      <QTile delay={0.10}><Inp label="Your email address" name="email" type="email" value={f.email} onChange={set} error={errs.email} ph="you@example.com"/></QTile>
-                      <QTile delay={0.15}><Inp label="Mobile number" name="phone" type="tel" value={f.phone} onChange={set} error={errs.phone} ph="10-digit mobile"/></QTile>
+                      <QTile delay={0.05} cols={2}><Inp label="What should we call you?" name="name" value={f.name} onChange={set} error={errs.name} ph="Your full name" maxLength={60}/></QTile>
+                      <QTile delay={0.10}><Inp label="Your email address" name="email" type="email" value={f.email} onChange={set} error={errs.email} ph="you@example.com" maxLength={100}/></QTile>
+                      <QTile delay={0.15}><Inp label="Mobile number" name="phone" type="tel" value={f.phone} onChange={set} error={errs.phone} ph="10-digit mobile" maxLength={10} inputMode="numeric"/></QTile>
                     </div>
 
                     {DIV_O}
 
                     <SH n={2} label="Academic background" sub="Tell us where you're coming from"/>
                     <div className="mf-grid" style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10 }}>
-                      <QTile delay={0.05} cols={2}><Inp label="Which college are you in?" name="college" value={f.college} onChange={set} error={errs.college} ph="Your college name"/></QTile>
-                      <QTile delay={0.10}><Inp label="Percentage / GPA" name="pct" type="number" value={f.pct} onChange={set} error={errs.pct} ph="e.g. 92.5"/></QTile>
+                      <QTile delay={0.05} cols={2}><Inp label="Which college are you in?" name="college" value={f.college} onChange={set} error={errs.college} ph="Your college name" maxLength={100}/></QTile>
+                      <QTile delay={0.10}><Inp label="Percentage / GPA" name="pct" type="number" value={f.pct} onChange={set} error={errs.pct} ph="e.g. 92.5" min="0" max="100" step="0.01"/></QTile>
                       <QTile delay={0.15}><Sel label="Preferred branch" name="branch" opts={BRANCHES} value={f.branch} onChange={set} error={errs.branch}/></QTile>
                     </div>
 
@@ -490,6 +495,7 @@ export default function MLRITForm() {
                         <QL>What excites you most about MLRIT?</QL>
                         <textarea name="excites" value={f.excites} onChange={set} rows={3}
                           placeholder="Research culture, innovation labs, placements..."
+                          maxLength={500}
                           className={iCls} style={{ ...GI,borderRadius:12,resize:'none',fontFamily:'inherit',width:'100%' }}/>
                         <AnimatePresence>
                           {errs.excites && <motion.p initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} exit={{opacity:0}} style={{fontSize:11,color:'#fca5a5',fontWeight:600,marginTop:5}}>{errs.excites}</motion.p>}
@@ -518,6 +524,7 @@ export default function MLRITForm() {
                         <QL opt>What are your future goals?</QL>
                         <textarea name="goals" value={f.goals} onChange={set} rows={3}
                           placeholder="Build an AI startup, do research, lead product teams..."
+                          maxLength={500}
                           className={iCls} style={{ ...GI,borderRadius:12,resize:'none',fontFamily:'inherit',width:'100%' }}/>
                       </QTile>
                     </div>
@@ -526,7 +533,7 @@ export default function MLRITForm() {
 
                     <SH n={4} label="Where are you from?" sub="Just your location"/>
                     <div className="mf-grid" style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10 }}>
-                      <QTile delay={0.05}><Inp label="City" name="city" value={f.city} onChange={set} error={errs.city} ph="Your city"/></QTile>
+                      <QTile delay={0.05}><Inp label="City" name="city" value={f.city} onChange={set} error={errs.city} ph="Your city" maxLength={60}/></QTile>
                       <QTile delay={0.10}><Sel label="State" name="state" opts={STATES} value={f.state} onChange={set} error={errs.state}/></QTile>
                     </div>
 
